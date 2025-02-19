@@ -3,17 +3,17 @@
 
 #include "c_vec.h"
 
-void vec_init(c_vec *self) {
+void c_vec_init(c_vec *self) {
     self->buffer = NULL;
     self->length = 0;
     self->capacity = 0;
 }
 
-void vec_free(c_vec *self) {
+void c_vec_free(c_vec *self) {
     free(self->buffer);
 }
 
-void vec_push(c_vec *self, void *elem) {
+void c_vec_push(c_vec *self, void *elem) {
     if (self->length == self->capacity) {
         size_t new_cap = (self->capacity > 0) ? (self->capacity * 2) : 1;
         self->buffer = realloc(self->buffer, new_cap * sizeof(void *));
@@ -27,7 +27,7 @@ void vec_push(c_vec *self, void *elem) {
     self->length++;
 }
 
-void *vec_pop(c_vec *self) {
+void *c_vec_pop(c_vec *self) {
     if (self->length > 0) {
         self->length--;
         return self->buffer[self->length];
@@ -36,9 +36,9 @@ void *vec_pop(c_vec *self) {
     }
 }
 
-void vec_take_all(c_vec *self, c_vec *other) {
+void c_vec_take_all(c_vec *self, c_vec *other) {
     for (size_t i = 0; i < other->length; i++) {
-        vec_push(self, other->buffer[i]);
+        c_vec_push(self, other->buffer[i]);
     }
     other->length = 0;
 }

@@ -19,7 +19,7 @@ impl<T> CVec<T> {
     pub fn new() -> Self {
         let mut inner = MaybeUninit::uninit();
         unsafe {
-            ffi::vec_init(inner.as_mut_ptr());
+            ffi::c_vec_init(inner.as_mut_ptr());
             Self {
                 inner: inner.assume_init(),
                 _phantom: PhantomData,
@@ -31,12 +31,12 @@ impl<T> CVec<T> {
         let elem_box = Box::new(elem);
         let elem_ptr = Box::leak(elem_box) as *mut T;
         unsafe {
-            ffi::vec_push(&mut self.inner, elem_ptr as *mut c_void);
+            ffi::c_vec_push(&mut self.inner, elem_ptr as *mut c_void);
         }
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        let elem_ptr = unsafe { ffi::vec_pop(&mut self.inner) as *mut T };
+        let elem_ptr = unsafe { ffi::c_vec_pop(&mut self.inner) as *mut T };
         if elem_ptr.is_null() {
             return None;
         }
@@ -46,7 +46,7 @@ impl<T> CVec<T> {
 
     pub fn take_all(&mut self, other: &mut Self) {
         unsafe {
-            ffi::vec_take_all(&mut self.inner, &mut other.inner);
+            ffi::c_vec_take_all(&mut self.inner, &mut other.inner);
         }
     }
 }
@@ -57,7 +57,7 @@ impl<T> Drop for CVec<T> {
             drop(elem);
         }
         unsafe {
-            ffi::vec_free(&mut self.inner);
+            ffi::c_vec_free(&mut self.inner);
         }
     }
 }
