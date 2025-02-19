@@ -11,7 +11,7 @@ mod ffi {
 }
 
 pub struct CVec<T> {
-    inner: ffi::vec,
+    inner: ffi::c_vec,
     _phantom: PhantomData<T>,
 }
 
