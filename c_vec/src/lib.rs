@@ -108,4 +108,15 @@ mod tests {
         assert_eq!(v1.pop(), None);
         assert_eq!(v2.pop(), None);
     }
+
+    // #[test]
+    // fn test_take_infinite_loop() {
+    //     let mut v1 = CVec::new();
+    //     v1.push(42);
+    //     let v1_ptr = &mut v1.inner as *mut ffi::c_vec;
+    //     unsafe {
+    //         // This is an infinite loop :(
+    //         ffi::c_vec_take_all(v1_ptr, v1_ptr);
+    //     }
+    // }
 }
