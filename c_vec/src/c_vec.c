@@ -35,3 +35,10 @@ void *vec_pop(c_vec *self) {
         return NULL;
     }
 }
+
+void vec_take_all(c_vec *self, c_vec *other) {
+    for (size_t i = 0; i < other->length; i++) {
+        vec_push(self, other->buffer[i]);
+    }
+    other->length = 0;
+}

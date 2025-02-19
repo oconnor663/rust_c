@@ -43,6 +43,12 @@ impl<T> CVec<T> {
         let elem_box = unsafe { Box::from_raw(elem_ptr) };
         Some(*elem_box)
     }
+
+    pub fn take_all(&mut self, other: &mut Self) {
+        unsafe {
+            ffi::vec_take_all(&mut self.inner, &mut other.inner);
+        }
+    }
 }
 
 impl<T> Drop for CVec<T> {
@@ -80,5 +86,26 @@ mod tests {
         }
 
         assert_eq!(v.pop(), None);
+    }
+
+    #[test]
+    fn test_take_all() {
+        let mut v1 = CVec::new();
+        v1.push(1);
+        v1.push(2);
+        v1.push(3);
+        let mut v2 = CVec::new();
+        v2.push(4);
+        v2.push(5);
+        v2.push(6);
+        v1.take_all(&mut v2);
+        assert_eq!(v1.pop(), Some(6));
+        assert_eq!(v1.pop(), Some(5));
+        assert_eq!(v1.pop(), Some(4));
+        assert_eq!(v1.pop(), Some(3));
+        assert_eq!(v1.pop(), Some(2));
+        assert_eq!(v1.pop(), Some(1));
+        assert_eq!(v1.pop(), None);
+        assert_eq!(v2.pop(), None);
     }
 }

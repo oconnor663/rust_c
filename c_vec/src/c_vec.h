@@ -10,3 +10,4 @@ void vec_init(c_vec *self);
 void vec_free(c_vec *self);
 void vec_push(c_vec *self, void *elem);
 void *vec_pop(c_vec *self);
+void vec_take_all(c_vec *self, c_vec *other);
