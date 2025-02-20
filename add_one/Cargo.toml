@@ -1,9 +1,7 @@
 [package]
 name = "add_one"
 version = "0.1.0"
-edition = "2021"
-
-[dependencies]
+edition = "2024"
 
 [build-dependencies]
 cc = "1.2.14"
