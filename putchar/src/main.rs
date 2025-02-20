@@ -5,7 +5,7 @@ unsafe extern "C" {
 }
 
 fn main() {
-    for &byte in "hello\nworld\n".as_bytes() {
+    for &byte in b"hello world\n" {
         unsafe {
             putchar(byte as c_char);
         }
