@@ -53,8 +53,8 @@ impl<T> CVec<T> {
 
 impl<T> Drop for CVec<T> {
     fn drop(&mut self) {
-        while let Some(elem) = self.pop() {
-            drop(elem);
+        while self.pop().is_some() {
+            // The Option<T> returned by .pop() is a "temporary" that gets dropped automatically.
         }
         unsafe {
             ffi::c_vec_free(&mut self.inner);
