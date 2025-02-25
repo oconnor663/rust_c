@@ -1,0 +1,9 @@
+[package]
+name = "short_vec"
+version = "0.1.0"
+edition = "2024"
+
+[build-dependencies]
+anyhow = "1.0.95"
+bindgen = "0.71.1"
+cc = "1.2.14"

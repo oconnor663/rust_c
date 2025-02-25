@@ -112,6 +112,7 @@ mod tests {
     // #[test]
     // fn test_take_all_self() {
     //     let mut v = CVec::new();
+    //     v.push(42);
     //     v.take_all(&mut v);
     // }
 
