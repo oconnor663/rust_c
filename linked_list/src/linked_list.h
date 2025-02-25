@@ -1,3 +1,6 @@
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
+
 #include <stddef.h>
 
 typedef struct node {
@@ -16,3 +19,5 @@ size_t linked_list_len(const linked_list *self);
 void linked_list_push(linked_list *self, void *elem);
 void *linked_list_pop(linked_list *self);
 void linked_list_concat(linked_list *self, linked_list *other);
+
+#endif

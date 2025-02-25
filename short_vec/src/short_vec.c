@@ -4,10 +4,8 @@
 #include "short_vec.h"
 
 void short_vec_push(short_vec *self, void *elem) {
-    if (self->length < CAPACITY) {
-        self->buffer[self->length] = elem;
-        self->length++;
-    }
+    self->buffer[self->length] = elem;
+    self->length++;
 }
 
 void *short_vec_pop(short_vec *self) {
@@ -17,11 +15,4 @@ void *short_vec_pop(short_vec *self) {
     } else {
         return NULL;
     }
-}
-
-void short_vec_take_all(short_vec *self, short_vec *other) {
-    for (size_t i = 0; i < other->length; i++) {
-        short_vec_push(self, other->buffer[i]);
-    }
-    other->length = 0;
 }

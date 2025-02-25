@@ -29,9 +29,7 @@ impl<T> ShortVec<T> {
     }
 
     pub fn push(&mut self, elem: T) {
-        if self.inner.length == CAPACITY {
-            return;
-        }
+        assert!(self.inner.length < CAPACITY);
         let elem_box = Box::new(elem);
         let elem_ptr = Box::leak(elem_box) as *mut T;
         unsafe {
@@ -47,19 +45,11 @@ impl<T> ShortVec<T> {
         let elem_box = unsafe { Box::from_raw(elem_ptr) };
         Some(*elem_box)
     }
-
-    pub fn take_all(&mut self, other: &mut Self) {
-        unsafe {
-            ffi::short_vec_take_all(&mut self.inner, &mut other.inner);
-        }
-    }
 }
 
 impl<T> Drop for ShortVec<T> {
     fn drop(&mut self) {
-        while let Some(elem) = self.pop() {
-            drop(elem);
-        }
+        while self.pop().is_some() {}
     }
 }
 
@@ -70,65 +60,30 @@ mod tests {
     #[test]
     fn test_push_pop() {
         let mut v = ShortVec::new();
-        assert_eq!(v.inner.length, 0);
-
-        // Fill the ShortVec.
-        for i in 0..10 {
-            v.push(i);
-            assert_eq!(v.inner.length, i + 1);
-        }
-
-        // Trying to add more elements to a full ShortVec does nothing.
-        assert_eq!(v.inner.length, CAPACITY);
-        v.push(42);
-        assert_eq!(v.inner.length, CAPACITY);
-
-        // Pop all the elements back out.
-        for i in (0..10).rev() {
-            assert_eq!(v.pop(), Some(i));
-            assert_eq!(v.inner.length, i);
-        }
-
-        // Popping an empty ShortVec returns None.
+        v.push(1);
+        v.push(2);
+        v.push(3);
+        assert_eq!(v.pop(), Some(3));
+        assert_eq!(v.pop(), Some(2));
+        assert_eq!(v.pop(), Some(1));
         assert_eq!(v.pop(), None);
     }
 
     #[test]
-    fn test_take_all() {
-        let mut v1 = ShortVec::new();
-        v1.push(1);
-        v1.push(2);
-        v1.push(3);
-        let mut v2 = ShortVec::new();
-        v2.push(4);
-        v2.push(5);
-        v2.push(6);
-        v1.take_all(&mut v2);
-        assert_eq!(v1.pop(), Some(6));
-        assert_eq!(v1.pop(), Some(5));
-        assert_eq!(v1.pop(), Some(4));
-        assert_eq!(v1.pop(), Some(3));
-        assert_eq!(v1.pop(), Some(2));
-        assert_eq!(v1.pop(), Some(1));
-        assert_eq!(v1.pop(), None);
-        assert_eq!(v2.pop(), None);
+    #[should_panic]
+    fn test_over_capacity() {
+        let mut v = ShortVec::new();
+        for i in 0..CAPACITY + 1 {
+            v.push(i);
+        }
     }
 
-    // #[test]
-    // fn test_take_all_self() {
-    //     let mut v = ShortVec::new();
-    //     v.push(42);
-    //     v.take_all(&mut v);
-    // }
-
+    // If we don't implement Drop properly, ASan will complain about a memory leak here.
     #[test]
-    fn test_take_all_self_ffi() {
-        let mut v1 = ShortVec::new();
-        v1.push(42);
-        let v1_ptr = &mut v1.inner as *mut ffi::short_vec;
-        unsafe {
-            ffi::short_vec_take_all(v1_ptr, v1_ptr);
-        }
-        assert_eq!(v1.inner.length, 0, "That's kind of weird!");
+    fn test_drop() {
+        let mut v = ShortVec::new();
+        v.push(1);
+        v.push(2);
+        v.push(3);
     }
 }
