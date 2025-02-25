@@ -110,6 +110,12 @@ mod tests {
     }
 
     // #[test]
+    // fn test_take_all_self() {
+    //     let mut v = CVec::new();
+    //     v.take_all(&mut v);
+    // }
+
+    // #[test]
     // fn test_take_infinite_loop() {
     //     let mut v1 = CVec::new();
     //     v1.push(42);
