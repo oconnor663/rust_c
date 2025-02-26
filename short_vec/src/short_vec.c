@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "short_vec.h"
 
 void short_vec_push(short_vec *self, void *elem) {
