@@ -139,6 +139,27 @@ An introduction to "foreign functions"
 
 
 <section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<pre><code class="hljs rust scrollable" data-trim"><script type="text/template">
+use std::ffi::c_int;
+
+unsafe extern "C" {
+    fn putchar(c: c_int) -> c_int;
+}
+
+fn main() {
+    for &byte in b"hello world\n" {
+        unsafe {
+            putchar(byte as c_int);
+        }
+    }
+}
+</script></code></pre>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
 <div class="rows">
 <div class="logos_row" style="height: 650px">
 <img src="The_C_Programming_Language_logo.svg" class="logo">
