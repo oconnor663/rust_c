@@ -467,6 +467,15 @@ impl<T> Drop for ShortVec<T> {
 </section>
 
 
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<pre><code class="hljs text" style="font-size: 30pt" data-trim><script type="text/template">
+CFLAGS="-fsanitize=address" RUSTFLAGS="-Zsanitizer=address" cargo +nightly test
+</script></code></pre>
+</div>
+</section>
+
+
             </div>
         </div>
 
