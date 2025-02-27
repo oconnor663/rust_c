@@ -1,3 +1,4 @@
+use std::ffi::c_void;
 use std::marker::PhantomData;
 
 #[allow(dead_code)]
@@ -29,18 +30,18 @@ impl<T> ShortVec<T> {
     pub fn push(&mut self, elem: T) {
         assert!(self.inner.length < CAPACITY);
         let elem_box = Box::new(elem);
-        let elem_ptr = Box::leak(elem_box) as *mut T;
+        let elem_ptr = Box::leak(elem_box) as *mut T as *mut c_void;
         unsafe {
-            ffi::short_vec_push(&mut self.inner, elem_ptr as *mut std::ffi::c_void);
+            ffi::short_vec_push(&mut self.inner, elem_ptr);
         }
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        let elem_ptr = unsafe { ffi::short_vec_pop(&mut self.inner) as *mut T };
+        let elem_ptr = unsafe { ffi::short_vec_pop(&mut self.inner) };
         if elem_ptr.is_null() {
             return None;
         }
-        let elem_box = unsafe { Box::from_raw(elem_ptr) };
+        let elem_box = unsafe { Box::from_raw(elem_ptr as *mut T) };
         Some(*elem_box)
     }
 }

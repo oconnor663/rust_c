@@ -303,15 +303,19 @@ fn main() -> anyhow::Result<()> {
 <div>
 <p style="margin: 0">$OUT_DIR/bindings.rs</p>
 <pre><code class="hljs rust" style="font-size: 30pt" data-trim><script type="text/template">
+pub const CAPACITY: u32 = 10;
+
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct short_vec {
     pub buffer: [*mut ::std::os::raw::c_void; 10usize],
     pub length: usize,
 }
+
 unsafe extern "C" {
     pub fn short_vec_push(self_: *mut short_vec, elem: *mut ::std::os::raw::c_void);
 }
+
 unsafe extern "C" {
     pub fn short_vec_pop(self_: *mut short_vec) -> *mut ::std::os::raw::c_void;
 }
@@ -343,7 +347,7 @@ mod ffi {
 <div class="columns">
 <div>
 <p style="margin: 0">src/lib.rs</p>
-<pre><code class="hljs rust" style="font-size: 30pt" data-trim><script type="text/template">
+<pre><code class="hljs rust" style="font-size: 40pt" data-trim><script type="text/template">
 use std::marker::PhantomData;
 
 const CAPACITY: usize = ffi::CAPACITY as usize;
@@ -371,15 +375,15 @@ impl<T> ShortVec<T> {
 <section><!---------------------------------- SLIDE ----------------------------------------------->
 <div class="columns">
 <div>
-<pre><code class="hljs text" style="font-size: 27pt" data-trim><script type="text/template">
+<pre><code class="hljs text" style="font-size: 40pt" data-trim><script type="text/template">
 error[E0392]: type parameter `T` is never used
   --> src/lib.rs:15:21
    |
 15 | pub struct ShortVec<T> {
    |                     ^ unused type parameter
    |
-   = help: consider removing `T`, referring to it in a field, or using a marker such as `PhantomData`
-   = help: if you intended `T` to be a const parameter, use `const T: /* Type */` instead
+   = help: consider removing `T`, referring to it in a field,
+           or using a marker such as `PhantomData`
 </script></code></pre>
 </div>
 </div>
@@ -390,7 +394,7 @@ error[E0392]: type parameter `T` is never used
 <div class="columns">
 <div>
 <p style="margin: 0">src/lib.rs</p>
-<pre><code class="hljs rust" style="font-size: 30pt" data-trim data-line-numbers="1,7,17"><script type="text/template">
+<pre><code class="hljs rust" style="font-size: 35pt" data-trim data-line-numbers="1,7,17"><script type="text/template">
 use std::marker::PhantomData;
 
 const CAPACITY: usize = ffi::CAPACITY as usize;
@@ -409,6 +413,52 @@ impl<T> ShortVec<T> {
             },
             phantom: PhantomData,
         }
+    }
+}
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<p style="margin: 0">src/lib.rs</p>
+<pre><code class="hljs rust" style="font-size: 35pt" data-trim"><script type="text/template">
+impl<T> ShortVec<T> {
+    pub fn push(&mut self, elem: T) {
+        assert!(self.inner.length < CAPACITY);
+        let elem_box = Box::new(elem);
+        let elem_ptr = Box::leak(elem_box) as *mut T as *mut c_void;
+        unsafe {
+            ffi::short_vec_push(&mut self.inner, elem_ptr);
+        }
+    }
+
+    pub fn pop(&mut self) -> Option<T> {
+        let elem_ptr = unsafe { ffi::short_vec_pop(&mut self.inner) };
+        if elem_ptr.is_null() {
+            return None;
+        }
+        let elem_box = unsafe { Box::from_raw(elem_ptr as *mut T) };
+        Some(*elem_box)
+    }
+}
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<p style="margin: 0">src/lib.rs</p>
+<pre><code class="hljs rust" style="font-size: 50pt" data-trim"><script type="text/template">
+impl<T> Drop for ShortVec<T> {
+    fn drop(&mut self) {
+        while self.pop().is_some() {}
     }
 }
 </script></code></pre>
