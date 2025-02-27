@@ -219,6 +219,204 @@ CC_ENABLE_DEBUG_OUTPUT=1 cargo build -vv
 </section>
 
 
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns" style="font-size: 27pt">
+
+<div>
+<p style="margin: 0">src/short_vec.h</p>
+<pre><code class="hljs c" data-trim><script type="text/template">
+#ifndef SHORT_VEC_H
+#define SHORT_VEC_H
+
+#include <stddef.h>
+
+#define CAPACITY 10
+
+typedef struct short_vec {
+    void *buffer[CAPACITY];
+    size_t length;
+} short_vec;
+
+void short_vec_push(short_vec *self, void *elem);
+void *short_vec_pop(short_vec *self);
+
+#endif
+</script></code></pre>
+</div>
+
+<div>
+<p style="margin: 0">src/short_vec.c</p>
+<pre><code class="hljs c" data-trim"><script type="text/template">
+#include "short_vec.h"
+
+void short_vec_push(short_vec *self, void *elem) {
+    self->buffer[self->length] = elem;
+    self->length++;
+}
+
+void *short_vec_pop(short_vec *self) {
+    if (self->length > 0) {
+        self->length--;
+        return self->buffer[self->length];
+    } else {
+        return NULL;
+    }
+}
+</script></code></pre>
+</div>
+
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<p style="margin: 0">build.rs</p>
+<pre><code class="hljs rust" style="font-size: 36pt" data-trim><script type="text/template">
+use std::env;
+use std::path::PathBuf;
+
+fn main() -> anyhow::Result<()> {
+    let bindings = bindgen::Builder::default()
+        .header("src/short_vec.h")
+        .generate()?;
+    let out_path = PathBuf::from(env::var("OUT_DIR")?);
+    bindings.write_to_file(out_path.join("bindings.rs"))?;
+
+    cc::Build::new()
+        .file("src/short_vec.c")
+        .compile("short_vec");
+
+    println!("cargo:rerun-if-changed=src/short_vec.c");
+    println!("cargo:rerun-if-changed=src/short_vec.h");
+    Ok(())
+}
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<p style="margin: 0">$OUT_DIR/bindings.rs</p>
+<pre><code class="hljs rust" style="font-size: 30pt" data-trim><script type="text/template">
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct short_vec {
+    pub buffer: [*mut ::std::os::raw::c_void; 10usize],
+    pub length: usize,
+}
+unsafe extern "C" {
+    pub fn short_vec_push(self_: *mut short_vec, elem: *mut ::std::os::raw::c_void);
+}
+unsafe extern "C" {
+    pub fn short_vec_pop(self_: *mut short_vec) -> *mut ::std::os::raw::c_void;
+}
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<p style="margin: 0">src/lib.rs</p>
+<pre><code class="hljs rust" style="font-size: 40pt" data-trim><script type="text/template">
+#[allow(dead_code)]
+#[allow(non_upper_case_globals)]
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+mod ffi {
+    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+}
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<p style="margin: 0">src/lib.rs</p>
+<pre><code class="hljs rust" style="font-size: 30pt" data-trim><script type="text/template">
+use std::marker::PhantomData;
+
+const CAPACITY: usize = ffi::CAPACITY as usize;
+
+pub struct ShortVec<T> {
+    inner: ffi::short_vec,
+}
+
+impl<T> ShortVec<T> {
+    pub fn new() -> Self {
+        ShortVec {
+            inner: ffi::short_vec {
+                buffer: [std::ptr::null_mut(); CAPACITY],
+                length: 0,
+            },
+        }
+    }
+}
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<pre><code class="hljs text" style="font-size: 27pt" data-trim><script type="text/template">
+error[E0392]: type parameter `T` is never used
+  --> src/lib.rs:15:21
+   |
+15 | pub struct ShortVec<T> {
+   |                     ^ unused type parameter
+   |
+   = help: consider removing `T`, referring to it in a field, or using a marker such as `PhantomData`
+   = help: if you intended `T` to be a const parameter, use `const T: /* Type */` instead
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="columns">
+<div>
+<p style="margin: 0">src/lib.rs</p>
+<pre><code class="hljs rust" style="font-size: 30pt" data-trim data-line-numbers="1,7,17"><script type="text/template">
+use std::marker::PhantomData;
+
+const CAPACITY: usize = ffi::CAPACITY as usize;
+
+pub struct ShortVec<T> {
+    inner: ffi::short_vec,
+    phantom: PhantomData<T>,
+}
+
+impl<T> ShortVec<T> {
+    pub fn new() -> Self {
+        ShortVec {
+            inner: ffi::short_vec {
+                buffer: [std::ptr::null_mut(); CAPACITY],
+                length: 0,
+            },
+            phantom: PhantomData,
+        }
+    }
+}
+</script></code></pre>
+</div>
+</div>
+</section>
+
+
             </div>
         </div>
 

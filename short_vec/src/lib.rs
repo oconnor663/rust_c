@@ -1,6 +1,4 @@
-use std::ffi::c_void;
 use std::marker::PhantomData;
-use std::ptr;
 
 #[allow(dead_code)]
 #[allow(non_upper_case_globals)]
@@ -14,17 +12,17 @@ const CAPACITY: usize = ffi::CAPACITY as usize;
 
 pub struct ShortVec<T> {
     inner: ffi::short_vec,
-    _phantom: PhantomData<T>,
+    phantom: PhantomData<T>,
 }
 
 impl<T> ShortVec<T> {
     pub fn new() -> Self {
         ShortVec {
             inner: ffi::short_vec {
-                buffer: [ptr::null_mut(); CAPACITY],
+                buffer: [std::ptr::null_mut(); CAPACITY],
                 length: 0,
             },
-            _phantom: PhantomData,
+            phantom: PhantomData,
         }
     }
 
@@ -33,7 +31,7 @@ impl<T> ShortVec<T> {
         let elem_box = Box::new(elem);
         let elem_ptr = Box::leak(elem_box) as *mut T;
         unsafe {
-            ffi::short_vec_push(&mut self.inner, elem_ptr as *mut c_void);
+            ffi::short_vec_push(&mut self.inner, elem_ptr as *mut std::ffi::c_void);
         }
     }
 
