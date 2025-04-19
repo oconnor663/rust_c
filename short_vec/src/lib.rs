@@ -30,7 +30,7 @@ impl<T> ShortVec<T> {
     pub fn push(&mut self, elem: T) {
         assert!(self.inner.length < CAPACITY);
         let elem_box = Box::new(elem);
-        let elem_ptr = Box::leak(elem_box) as *mut T as *mut c_void;
+        let elem_ptr = Box::into_raw(elem_box) as *mut c_void;
         unsafe {
             ffi::short_vec_push(&mut self.inner, elem_ptr);
         }
