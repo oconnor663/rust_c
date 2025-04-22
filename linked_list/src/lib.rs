@@ -26,6 +26,7 @@ impl<T> LinkedList<T> {
         let elem_box = Box::new(elem);
         let elem_ptr = Box::into_raw(elem_box) as *mut c_void;
         unsafe {
+            // Note: `&mut *mut node` coerces to `*mut *mut node`.
             ffi::linked_list_push(&mut self.head, elem_ptr);
         }
     }

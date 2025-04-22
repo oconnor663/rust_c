@@ -8,8 +8,10 @@ struct node {
     node *next;
 };
 
-// In Rust terms we could say that `list` is a `&mut Option<Box<Node>>`.
+// In Rust terms we could say that `list` is a
+// `&mut Option<Box<Node>>`.
 void linked_list_push(node **list, void *elem);
+
 void *linked_list_pop(node **list);
 
 #endif
