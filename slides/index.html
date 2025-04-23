@@ -129,14 +129,32 @@ An introduction to "foreign functions"
 
 <section><!---------------------------------- SLIDE ----------------------------------------------->
 <div class="rows">
-<ul>
+<h1>write</h1>
+</div>
+</section>
+
+
+<section><!---------------------------------- SLIDE ----------------------------------------------->
+<div class="rows">
+<pre><code class="hljs rust" style="font-size: 40pt" data-trim><script type="text/template">
+use std::io::Write;
+
+fn main() {
+    _ = std::io::stdout().write(b"hello world\n");
+}
+</script></code></pre>
+
+<ul style="font-size: 35pt">
+<li style="opacity: .4"><code>println!</code></li>
+<li style="opacity: .4"><code>Write::write_fmt</code></li>
+<li style="opacity: .4"><code>Write::write_all</code></li>
 <li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/io/stdio.rs#L746"><code>Stdout::write</code></a></li>
 <li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/io/stdio.rs#L772"><code>&lt;&amp;Stdout&gt;::write</code></a></li>
 <li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/io/stdio.rs#L804"><code>StdoutLock::write</code></a></li>
 <li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/io/stdio.rs#L619"><code>struct StdoutLock</code></a></li>
 <li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/io/stdio.rs#L126"><code>StdoutRaw::write</code></a></li>
-<li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/sys/pal/unix/stdio.rs#L42"><code>Stdout::write</code></a></li>
-<li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/sys/pal/unix/fd.rs#L302"><code>FileDesc::write</code></a></li>
+<li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/sys/pal/unix/stdio.rs#L42"><code>std::sys::pal::unix::stdio::Stdout::write</code></a></li>
+<li><a href="https://github.com/rust-lang/rust/blob/1.85.0/library/std/src/sys/pal/unix/fd.rs#L302"><code>std::sys::pal::unix::fd::FileDesc::write</code></a></li>
 <li><a href="https://github.com/rust-lang/libc/blob/0.2.170/src/unix/mod.rs#L1043"><code>libc::write</code></a></li>
 </ul>
 </div>
