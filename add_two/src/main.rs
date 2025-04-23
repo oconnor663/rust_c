@@ -7,9 +7,8 @@ unsafe extern "C" {
     pub fn add_two(x: i32) -> i32;
 }
 
-#[test]
-fn test_add_two() {
+fn main() {
     unsafe {
-        assert_eq!(add_two(42), 44);
+        println!("{}", add_two(40));
     }
 }

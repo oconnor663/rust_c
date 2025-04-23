@@ -52,6 +52,11 @@
             font-size: 30pt;
         }
 
+        code.hljs {
+            /* Avoid issues with code block backgrounds overlapping other elements. */
+            background: none;
+        }
+
         code.scrollable {
             box-sizing: border-box;
             font-size: 40pt;
@@ -204,11 +209,17 @@ extern "C" fn add_one(x: i32) -> i32 {
 unsafe extern "C" {
     pub fn add_two(x: i32) -> i32;
 }
+
+fn main() {
+    unsafe {
+        println!("{}", add_two(40));
+    }
+}
 </script></code></pre>
 </div>
 
 <div>
-<p style="margin: 0">src/lib.c</p>
+<p style="margin: 0">src/add_two.c</p>
 <pre><code class="hljs c" data-trim><script type="text/template">
 #include <stdint.h>
 
@@ -217,19 +228,18 @@ int32_t add_one(int32_t x);
 int32_t add_two(int32_t x) {
     return add_one(add_one(x));
 }
- 
 </script></code></pre>
 </div>
 
 </div> <!-- /columns -->
 
-<div>
+<div style="margin-top: -50px">
 <p style="margin: 0">build.rs</p>
 <pre><code class="hljs c" data-trim><script type="text/template">
 fn main() {
-    cc::Build::new().file("src/lib.c").compile("add_two");
+    cc::Build::new().file("src/add_two.c").compile("add_two");
 
-    println!("cargo:rerun-if-changed=src/lib.c");
+    println!("cargo:rerun-if-changed=src/add_two.c");
 }
 </script></code></pre>
 </div>
