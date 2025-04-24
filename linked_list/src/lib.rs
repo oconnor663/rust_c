@@ -37,6 +37,7 @@ impl<T> LinkedList<T> {
             return None;
         }
         let elem_box = unsafe { Box::from_raw(elem_ptr as *mut T) };
+        // Note: This "deref move" consumes the Box.
         Some(*elem_box)
     }
 }
