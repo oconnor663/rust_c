@@ -288,7 +288,10 @@ CC_ENABLE_DEBUG_OUTPUT=1 cargo build -vv
 
 <div>
 <p style="margin: 0">src/linked_list.h</p>
-<pre><code class="hljs c" data-trim><script type="text/template">
+<pre><code class="hljs c" data-trim data-line-numbers="4-9,13-15"><script type="text/template">
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
+
 typedef struct node node;
 
 struct node {
@@ -301,11 +304,8 @@ struct node {
 void linked_list_push(node **list, void *elem);
 
 void *linked_list_pop(node **list);
- 
- 
- 
- 
- 
+
+#endif
 </script></code></pre>
 </div>
 
